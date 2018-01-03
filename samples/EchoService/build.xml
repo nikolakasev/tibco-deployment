@@ -1,0 +1,73 @@
+<project name="EchoService" default="build">
+	<!-- the path to the installation directory of TIBCO Runtime Agent -->
+	<property name="tra.path" value="C:\tibco\tra\5.5\bin" />
+	<!-- the directory that contains the BusinessWorks project -->
+	<property name="src" value="C:\Develop\TibcoDeploymentFramework\samples\EchoService\src" />
+	<!-- a temporary directory, used during deployment -->
+	<!-- NOTE: this directory is deleted during every deployment, make sure not to keep any important files in there -->
+	<property name="build" value="C:\Develop\TibcoDeploymentFramework\samples\EchoService\build" />
+	<!-- determines the environment on which your are deploying, current allowed values are DEV, TST, PRD -->
+	<!-- NOTE: if more environments are needed, modify the EnvironmentSettings.xls Excel file and the property below-->
+	<property name="env" value="TST" />
+	<!-- the name of the machine that has TIBCO Administrator installed -->
+	<property name="tib.admin.server" value="tmns-q7avr5197m" />
+	<!-- the name of the administration domain, see the TIBCO DomainUtility for more information -->
+	<property name="tib.domain" value="dev" />
+	<!-- the admin user, as defined during the domain creation -->
+	<property name="tib.admin.user" value="tibadmin" />
+	<!-- the admin password -->
+	<property name="tib.admin.password" value="P@ssw0rd" />
+	
+	<path id="tasklib">
+		<path location="lib\ant-tibco-0.2.jar" />
+		<path location="lib\xmltask.1.4.jar" />
+	</path>
+	
+	<taskdef name="buildear"
+				classname="com.sofiadev.tibco.ant.BuildEarTask"
+				classpathref="tasklib" />
+	
+	<taskdef name="exportconfig"
+					classname="com.sofiadev.tibco.ant.ExportConfigTask"
+					classpathref="tasklib" />
+					
+	<taskdef name="editconfig"
+					classname="com.sofiadev.tibco.ant.EditConfigTask"
+					classpathref="tasklib" />
+	
+	<taskdef name="deployear"
+						classname="com.sofiadev.tibco.ant.DeployEarTask"
+						classpathref="tasklib" />
+						
+	<taskdef name="undeployear"
+					classname="com.sofiadev.tibco.ant.UndeployEarTask"
+					classpathref="tasklib" />
+	
+	<taskdef name="xmltask"
+			classname="com.oopsconsultancy.xmltask.ant.XmlTask"
+			classpathref="tasklib" />
+	
+	<target name="clean">
+		<delete dir="${build}" />
+	</target>
+		
+	<target name="init" depends="clean">
+		<mkdir dir="${build}" />
+	</target>
+	
+	<target name="build" depends="init">
+		<!-- build an EAR file from the BusinessWorks project -->
+		<buildear archiveName="EchoService" traPath="${tra.path}" destFile="${build}\EchoService.ear" src="${src}" />
+		<!-- export the existing configuration (all global variables) to an xml file -->
+		<exportconfig earFile="${build}\EchoService.ear" destFile="${build}\EchoService.ear.xml" traPath="${tra.path}" />
+		<xmltask source="${build}\EchoService.ear.xml" dest="${build}\EchoService.ear.xml" preserveType="true">
+			<replace path="/:application/:services/:bw/:bindings/:binding/:machine/text()" withText="${tib.admin.server}" />
+		</xmltask>
+		<!-- match the settings for the Excel sheet with the settings extracted from the EAR file -->
+		<editconfig configFile="${build}\EchoService.ear.xml" settingsFile="settings\${env}_settings.xml" />
+		<!-- check if the application is already deployed and undeploy it first -->
+		<undeployear appname="EchoService" domain="${tib.domain}" adminuser="${tib.admin.user}" password="${tib.admin.password}" traPath="${tra.path}" failOnError="false"/>
+		<!-- deploy the EAR with the environment specific variables -->
+		<deployear earFile="${build}\EchoService.ear" configFile="${build}\EchoService.ear.xml" appname="EchoService" domain="${tib.domain}" adminuser="${tib.admin.user}" password="${tib.admin.password}" traPath="${tra.path}" />
+	</target>
+</project>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<globalvariables>
+<variable name='MIG_DbServerName'>db-prod</variable>
+<variable name='MIG_DbServerPort'></variable>
+<variable name='MIG_HTTPPort'>7090</variable>
+</globalvariables>

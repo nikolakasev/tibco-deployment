@@ -1,0 +1,59 @@
+<project name="TibcoAntTasks" default="release">
+	<property name="version" value="0.3" />
+	<property name="src" value="TibcoAntTasks\src" />
+	<property name="build" value="TibcoAntTasks\build" />
+	<property name="package.dir" value="TibcoAntTasks\lib" />
+	<property name="release.dir" value="release" />
+	
+	<path id="ext.lib.path">
+		<pathelement path="C:\tools\apache-ant-1.7.0\lib\ant.jar"/>
+		<pathelement path="C:\tibco\hawk\lib\talon.jar"/>
+		<pathelement path="C:\tibco\hawk\lib\console.jar"/>
+		<pathelement path="C:\tibco\tibrv\8.1\lib\tibrvj.jar"/>
+		<pathelement path="C:\tibco\hawk\lib\util.jar"/>
+	</path>
+	
+	<target name="clean">
+		<delete dir="${build}" />
+		<delete dir="${release.dir}" />
+	</target>
+		
+	<target name="init" depends="clean">
+		<mkdir dir="${build}" />
+	</target>
+	
+	<target name="build" depends="init">
+		<javac srcdir="${src}" destdir="${build}" classpathref="ext.lib.path" />
+		<jar basedir="${build}" destfile="${build}\ant-tibco-${version}.jar" />
+	</target>
+	
+	<target name="package" depends="build">
+		<copy file="${build}\ant-tibco-${version}.jar" todir="${package.dir}" overwrite="true"/>
+	</target>
+	
+	<target name="release" depends="package">
+		<mkdir dir="${release.dir}" />
+		
+		<!--put the latest library in the samples directory -->
+		<copy file="${package.dir}\ant-tibco-${version}.jar" todir=".\lib" />
+		<copy file="${package.dir}\ant-tibco-${version}.jar" todir=".\samples\EchoService\lib" />
+	
+		<copy file="build.xml" todir="${release.dir}"/>
+		<copy file="EnvironmentSettings.xls" todir="${release.dir}"/>
+
+		<!-- copy all source files -->
+		<copy todir="${release.dir}/TibcoAntTasks">
+			<fileset dir="TibcoAntTasks">
+				<include name="**/*.java"/>
+				<include name="lib/*.jar"/>
+			</fileset>
+		</copy>
+		<!-- copy sample projects -->
+		<copy todir="${release.dir}/samples">
+			<fileset dir="samples">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		<zip destfile="${release.dir}/ant-tibco-${version}.zip" basedir="${release.dir}" />
+	</target>
+</project>

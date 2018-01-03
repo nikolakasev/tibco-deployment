@@ -1,0 +1,32 @@
+Buildfile: build.xml
+
+clean:
+   [delete] Deleting directory C:\Develop\TibcoDeploymentFramework\samples\EchoService\build
+
+init:
+    [mkdir] Created dir: C:\Develop\TibcoDeploymentFramework\samples\EchoService\build
+
+build:
+ [buildear] Starting up...
+ [buildear] Enterprise Archive File has built correctly.
+ [buildear] Ear created in: C:\Develop\TibcoDeploymentFramework\samples\EchoService\build\EchoService.ear
+[exportconfig] Initializing ...
+[exportconfig] Finished initialization
+[exportconfig] Exporting application configuration ...
+[exportconfig] Finished exporting application
+[exportconfig] Finished successfully in 0 seconds
+[editconfig] Variable MIG_HttpPort set to 7080
+[deployear] Checking if master server is responding ...
+[deployear] Finished checking
+[deployear] Initializing ...
+[deployear] Finished initialization
+[deployear] Loading archive ...
+[deployear] Finished loading archive
+[deployear] Configuring application ...
+[deployear] Finished configuring application
+[deployear] Deploying application ...
+[deployear] Finished deploying application
+[deployear] Finished successfully in 37 seconds
+
+BUILD SUCCESSFUL
+Total time: 52 seconds
